@@ -1,10 +1,6 @@
-# For each cylinder in the scan, find its ray and depth.
-# 03_c_find_cylinders
-# Claus Brenner, 09 NOV 2012
 from pylab import *
 from lego_robot import *
 
-# Find the derivative in scan data, ignoring invalid measurements.
 def compute_derivative(scan, min_dist):
     jumps = [ 0 ]
     for i in xrange(1, len(scan) - 1):
@@ -26,14 +22,19 @@ def find_cylinders(scan, scan_derivative, jump, min_dist):
     sum_ray, sum_depth, rays = 0.0, 0.0, 0
 
     for i in xrange(len(scan_derivative)):
-        # --->>> Insert your cylinder code here.
-        # Whenever you find a cylinder, add a tuple
-        # (average_ray, average_depth) to the cylinder_list.
+        if scan_derivative[i] < -1*jump:
+            on_cylinder = True
+        elif on_cylinder and scan_derivative[i] > jump:
+            on_cylinder = False
+            x = sum_ray/rays
+            y = sum_depth/rays
+            cylinder_list.append((x,y))
+            rays,sum_ray,sum_depth  = 0,0,0
 
-        # Just for fun, I'll output some cylinders.
-        # Replace this by your code.
-        if i % 100 == 0:
-            cylinder_list.append( (i, scan[i]) )
+        if on_cylinder:
+            rays = rays + 1
+            sum_ray = sum_ray + i
+            sum_depth  = sum_depth + scan[i]
 
     return cylinder_list
 
@@ -52,8 +53,8 @@ if __name__ == '__main__':
 
     # Find cylinders.
     der = compute_derivative(scan, minimum_valid_distance)
-    cylinders = find_cylinders(scan, der, depth_jump,
-                               minimum_valid_distance)
+
+    cylinders = find_cylinders(scan, der, depth_jump,minimum_valid_distance)
 
     # Plot results.
     plot(scan)
