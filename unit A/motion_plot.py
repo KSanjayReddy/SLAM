@@ -51,6 +51,6 @@ if __name__ == '__main__':
 
     # Draw result.
     for pose in filtered:
-        print pose
+        #print pose
         plot([p[0] for p in filtered], [p[1] for p in filtered], 'bo')
     show()
